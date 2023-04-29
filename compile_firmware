@@ -1,0 +1,28 @@
+#!/usr/bin/zsh
+
+fs_size="1M"
+
+usage() { echo "Usage: $0 [-s <1M|2M|3M>]" 1>&2;exit 1;}
+
+while [[ $# -gt 0 ]]; do
+	key="$1"
+	case $key in
+		-s|--size)
+			if [[ $2 == "1M" || $2 == "2M" || $2 == "3M" ]];then fs_size=$2;shift;fi
+			shift
+			;;
+		*)
+			usage
+			shift
+			;;
+	esac
+done
+
+echo -e "\n===================="
+echo fs_size: $fs_size
+echo -e "====================\n"
+
+echo -e "arduino-cli compile --fqbn esp8266:esp8266:generic --board-options CrystalFreq=26,FlashFreq=40,FlashMode=dio,eesz=4M$fs_size,led=2,sdk=nonosdk_191122 -e .\n"
+arduino-cli compile --fqbn esp8266:esp8266:generic --board-options CrystalFreq=26,FlashFreq=40,FlashMode=dio,eesz=4M$fs_size,led=2,sdk=nonosdk_191122 -e .
+mv build/esp8266.esp8266.generic/*.bin build/firmware.bin
+rm -r build/esp8266.esp8266.generic

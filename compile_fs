@@ -1,0 +1,37 @@
+#!/usr/bin/zsh
+
+size="1M"
+
+size() { echo -e "Invalid size.\nAvailable fs sizes: 1M, 2M, 3M." 1>&2;exit 1;}
+usage() { echo "Usage: $0 [-s <1M|2M|3M>]" 1>&2;exit 1;}
+
+while [[ $# -gt 0 ]]; do
+	key="$1"
+	case $key in
+		-s|--size)
+			if [[ ! -z "$2" ]];then if [[ ! -z "$2" ]] && [[ $2 == "1M" || $2 == "2M"  || $2 == "3M" ]];then size=$2;fi;shift;fi
+			shift
+			;;
+		*)
+			usage
+			shift
+			;;
+	esac
+done
+
+echo -e "\n===================="
+echo fs_size: $size
+echo -e "====================\n"
+
+if [[ $size == "1M" ]];then
+	echo -e "generating 1M FS\nAdding files:\n"
+	mklittlefs -c data -p 256 -b 8192 -s 1024000 build/fs.bin
+elif [[ $size == "2M" ]];then
+	echo -e "generating 2M FS\nAdding files:\n"
+	mklittlefs -c data -p 256 -b 8192 -s 2072576 build/fs.bin
+elif [[ $size == "3M" ]];then
+	echo -e "generating 3M FS\nAdding files:\n"
+	mklittlefs -c data -p 256 -b 8192 -s 3121152 build/fs.bin
+fi
+
+echo -e "\nUsing $(du -h data|awk '/\s/{print $1}') effective size on flash.\n"
