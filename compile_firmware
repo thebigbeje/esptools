@@ -1,6 +1,7 @@
 #!/usr/bin/zsh
 
 fs_size="1M"
+board="esp8266"
 
 usage() { echo "Usage: $0 [-s <1M|2M|3M>]" 1>&2;exit 1;}
 
@@ -22,7 +23,7 @@ echo -e "\n===================="
 echo fs_size: $fs_size
 echo -e "====================\n"
 
-echo -e "arduino-cli compile --fqbn esp8266:esp8266:generic --board-options CrystalFreq=26,FlashFreq=40,FlashMode=dio,eesz=4M$fs_size,led=2,sdk=nonosdk_191122 -e .\n"
+echo -e "arduino-cli compile --fqbn $board:$board:generic --board-options CrystalFreq=26,FlashFreq=40,FlashMode=dio,eesz=4M$fs_size,led=2,sdk=nonosdk_191122 -e .\n"
 arduino-cli compile --fqbn esp8266:esp8266:generic --board-options CrystalFreq=26,FlashFreq=40,FlashMode=dio,eesz=4M$fs_size,led=2,sdk=nonosdk_191122 -e .
-mv build/esp8266.esp8266.generic/*.bin build/firmware.bin
-rm -r build/esp8266.esp8266.generic
+mv build/*/*.bin build/firmware.bin
+rm -r build/*/
