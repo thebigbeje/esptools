@@ -74,6 +74,7 @@ baud() {
 speeds=(57600 115200 230400 460800 921600)
 (($baudrate == 57600 || $baudrate == 115200 || $baudrate == 230400 || $baudrate == 460800 || $baudrate == 921600)) || baud
 
+# Check 
 if [[ ! $ip =~ '\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$)){4}\b' ]]; then
 	generate_banner "$ip is not a valid IP address!" 80 "-"  "$BRed"
 	exit 1
