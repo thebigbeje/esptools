@@ -1,5 +1,3 @@
-Iată un fișier `README.md` concis și profesional, optimizat pentru un depozit de instrumente de dezvoltare IoT/Embedded.
-
 ```markdown
 # ⚡ ESP32/8266 Development & Deployment Toolchain
 
