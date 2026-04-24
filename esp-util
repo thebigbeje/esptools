@@ -1,4 +1,34 @@
 #!/usr/bin/zsh
+################################################################################
+# Script Name:       esp-dev-toolchain
+# Description:       Integrated development orchestrator for ESP8266 and ESP32 
+#                    microcontrollers. Manages the full lifecycle: compilation, 
+#                    filesystem generation (LittleFS/SPIFFS), serial flashing, 
+#                    OTA (Over-The-Air) updates, and serial monitoring.
+# Author:            Stefan
+# Version:           1.0
+# Last Modified:     2026-04-24
+# Dependencies:      zsh, arduino-cli, esptool.py, espota.py, mklittlefs, mkspiffs, fping
+# Hardware:          ESP8266/ESP32 development boards
+################################################################################
+
+# ==============================================================================
+# FUNCTIONALITY OVERVIEW
+# ==============================================================================
+# 1. Configuration-Driven: Loads environment variables (IP, Ports, Board FQBN) 
+#    from a local 'project.conf' file for portability across different projects.
+# 2. Validation Suite: Performs sanity checks on IP formats, baud rates, and 
+#    required configuration variables before initiating hardware operations.
+# 3. Smart Compilation: Wraps 'arduino-cli' to compile firmware and logs errors 
+#    to a dedicated file, aborting with visual alerts if the build fails.
+# 4. Multi-Architecture Filesystem Support:
+#    - ESP8266: Calculates flash addresses dynamically and uses 'mklittlefs'.
+#    - ESP32: Automatically parses 'partitions.csv' to determine SPIFFS sizes.
+# 5. OTA Orchestration: Implements 'wait_online' logic via ICMP (fping) to 
+#    ensure the target is reachable before pushing firmware/FS over the network.
+# 6. Lifecycle Management: Supports erasing flash, uploading via Serial/OTA, 
+#    and launching the serial monitor with a single command string.
+# ==============================================================================
 
 config="$(pwd)/project.conf"
 
@@ -328,3 +358,22 @@ while [[ $# -gt 0 ]]; do
 done
 
 generate_banner "DONE" 80 "+" "$BGreen"
+
+# ==============================================================================
+# SECURITY CONSIDERATIONS
+# ==============================================================================
+# 1. PLAIN-TEXT CREDENTIALS: 'project.conf' may contain OTA passwords ($auth). 
+#    Ensure this file is added to .gitignore to prevent leaking secrets to 
+#    version control.
+# 2. INSECURE OTA: ESPOTA typically transmits firmware over unencrypted TCP. 
+#    An attacker on the local network could intercept the firmware binary or 
+#    upload malicious code if $auth is weak or missing.
+# 3. NETWORK PROBING: The 'wait_online' function uses ICMP. In hardened 
+#    environments, ICMP may be blocked, causing the script to hang.
+# 4. PATH INJECTION: The script uses $(pwd) and ${PWD##*/} for file paths. 
+#    Spaces or shell metacharacters in directory names could break command 
+#    execution. Always wrap path variables in double quotes.
+# 5. SUDO USAGE: esptool.py requires access to /dev/ttyUSB*. Instead of 
+#    running the script with sudo, ensure the user is in the 'dialout' or 
+#    'uucp' group to maintain the Principle of Least Privilege.
+# ==============================================================================
